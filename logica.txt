@@ -1,0 +1,49 @@
+criar um app console de estacionamento com:
+
+- vagas (5 inicialmente)
+- custo por tempo
+
+--------------------------------
+
+que processe:
+
+- hora que o carro entrou
+- hora que o carro saiu
+- guardar a placa do carro
+- guardar o nome do dono
+- guardar o modelo do carro
+- cobrança padrão de uma hora (R$10)
+- quando PROVAVELMENTE liberará novas vagas
+- quantas vagas estão em uso
+- quantas vagas estão livres
+- cobrança de valor por tempo adicional (R$7 por 0.5 hora e R$12 por 1 hora)
+
+--------------------------------
+
+estruturas que serão utilizadas:
+
+- funções
+| - DisplayWelcomeMessage()
+| - DisplayMenu()
+| - CreateVehicle()
+| - RegisterEnterVehicle()
+| - SelectParkingLot()
+| - ShowParkedVehicles()
+| - CalculateParkingFee()
+| - ChargeParking()
+| - ProcessPayment()
+| - EnterVehicle()
+| - DisplayGoodByeMessage()
+| - ExitVehicle()
+
+- objetos / função construtora
+- dictionary
+{
+    estacionamento
+    |
+    |- KEY vaga 1 >> status
+    |- KEY vaga 2 >> status
+    |- KEY vaga 3 >> status
+    |- KEY vaga 4 >> status
+    |- KEY vaga 5 >> status
+}
