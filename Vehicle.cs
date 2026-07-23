@@ -1,8 +1,9 @@
 public class Vehicle
 {
+    public string Owner { get; set; }
     public string Plate { get; set; }
     public string Model { get; set; }
-    public string Owner { get; set; }
+
 
     public Vehicle (string owner, string plate, string model)
     {

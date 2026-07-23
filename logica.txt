@@ -32,7 +32,7 @@ estruturas que serão utilizadas:
 | - CalculateParkingFee()
 | - ChargeParking()
 | - ProcessPayment()
-| - EnterVehicle()
+| - ParkVehicle()
 | - DisplayGoodByeMessage()
 | - ExitVehicle()
 

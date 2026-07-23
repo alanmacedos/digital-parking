@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-// functions
+﻿// functions
 
 void DisplayWelcomeMessage()
 {
@@ -34,19 +32,20 @@ int DisplayMenu()
 
 Vehicle CreateVehicle()
 {
-    Console.WriteLine("Qual seu nome?\n");
+    Console.WriteLine("\nQual seu nome?\n");
     string owner = Console.ReadLine()!;
     
-    Console.WriteLine("Qual a placa do seu veículo?\n");
+    Console.WriteLine("\nQual a placa do seu veículo?\n");
     string plate = Console.ReadLine()!;
 
-    Console.WriteLine("Qual o modelo do veículo?\n");
+    Console.WriteLine("\nQual o modelo do veículo?\n");
     string model = Console.ReadLine()!;
 
     return new Vehicle(owner, plate, model);
 }
 
 // calling functions
+new ParkingLot(5);
 DisplayWelcomeMessage();
 int menuOption = DisplayMenu();
 
@@ -57,12 +56,13 @@ switch(menuOption)
         break;
 
     case 2 :
-        ExitVheicle();
+        // ExitVheicle();
         break;
 
 
     case 3 :
-        ShowParkedVehicles();
+        // ShowParkedVehicles();
         break;
 
 }
+
