@@ -1,7 +1,26 @@
 criar um app console de estacionamento com:
 
+- DIAGRAMA UML
+
 - vagas (5 inicialmente)
 - custo por tempo
+
+--------------------------------
+
+| tabela de valores padrão |
+|
+| - 30 min >>  R$ 6
+| - 1 hr >>    R$ 10
+| - 2 hr >>    R$ 18
+| - 3 hr >>    R$ 30
+    |
+    | valores adicionais |
+    |
+    | - 30 min >>  R$ 9
+    | - 1 hr >>    R$ 12
+    | - 2 hr >>    R$ 21
+    | - 3 hr >>    R$ 33
+    
 
 --------------------------------
 
@@ -12,9 +31,9 @@ que processe:
 - guardar a placa do carro
 - guardar o nome do dono
 - guardar o modelo do carro
-- cobrança padrão de uma hora (R$10)
+- cobrança (tabela de valores)
 - quando PROVAVELMENTE liberará novas vagas
-- quantas vagas estão em uso
+- quantas vagas estão em uso && por quem
 - quantas vagas estão livres
 - cobrança de valor por tempo adicional (R$7 por 0.5 hora e R$12 por 1 hora)
 
@@ -22,21 +41,44 @@ que processe:
 
 estruturas que serão utilizadas:
 
-- funções
+- classes/funções
 | - DisplayWelcomeMessage()
 | - DisplayMenu()
-| - CreateVehicle()
-| - RegisterEnterVehicle()
-| - SelectParkingLot()
-| - ShowParkedVehicles()
-| - CalculateParkingFee()
-| - ChargeParking()
-| - ProcessPayment()
-| - ParkVehicle()
-| - DisplayGoodByeMessage()
-| - ExitVehicle()
 
-- objetos / função construtora
+    Vehicle.cs
+    |
+    | - Vehicle()
+    | - CreateVehicle()
+
+    ParkingLot.cs
+    |
+    | - ParkingLot()
+    | - ParkCar()
+    | - ParkingSpacesAvailable()
+    | - DisplayParkingSpacesAvailable()
+    | - ParkingSpacesUnavailable()
+    | - DisplayParkingSpacesUnavailable()
+    | - DisplayEnterVehicle()
+    | - EnterVehicle()
+    | - DisplayExitVehicle()
+    | - ExitVehicle()
+    | - SelectParkingSpace()
+    | - ShowParkedVehicles()
+
+    ParkingSession.cs
+    |
+    | - ParkingSession()
+
+    Payment.cs
+    |
+    | - CalculateParkingFee()
+    | - ChargeParking()
+    | - ProcessPayment()
+
+| - DisplayGoodByeMessage()
+
+- objetos
+- list
 - dictionary
 {
     estacionamento
@@ -47,3 +89,25 @@ estruturas que serão utilizadas:
     |- KEY vaga 4 >> status
     |- KEY vaga 5 >> status
 }
+
+
+notes for the next code session
+
+1 - Criar a ParkingSession com:
+-Vehicle
+-EntryTime
+-ExitTime
+-ContractedMinutes
+
+2 - Fazer a entrada do usuário:
+    -escolher 30 min, 1 h, 2 h ou 3 h;
+    -armazenar os minutos contratados.
+
+3 - Registrar a saída.
+
+4 - Na Payment, calcular apenas:
+    -tempo real (ExitTime - EntryTime).
+Comparar:
+tempo real × tempo contratado.
+Implementar a tolerância de 10 minutos.
+Implementar a tabela de adicionais.

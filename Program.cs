@@ -30,29 +30,16 @@ int DisplayMenu()
     return int.Parse(Console.ReadLine()!);
 }
 
-Vehicle CreateVehicle()
-{
-    Console.WriteLine("\nQual seu nome?\n");
-    string owner = Console.ReadLine()!;
-    
-    Console.WriteLine("\nQual a placa do seu veículo?\n");
-    string plate = Console.ReadLine()!;
-
-    Console.WriteLine("\nQual o modelo do veículo?\n");
-    string model = Console.ReadLine()!;
-
-    return new Vehicle(owner, plate, model);
-}
 
 // calling functions
-new ParkingLot(5);
+ParkingLot parkingLot = new ParkingLot(5);
 DisplayWelcomeMessage();
 int menuOption = DisplayMenu();
 
 switch(menuOption)
 {
     case 1 :
-        CreateVehicle();
+        // CreateVehicle();
         break;
 
     case 2 :
@@ -64,5 +51,15 @@ switch(menuOption)
         // ShowParkedVehicles();
         break;
 
+}
+
+Vehicle veiculo = new Vehicle("flexa", "IOF5678", "New Fiesta");
+veiculo.CreateVehicle();
+
+List<int> spacesAvailable = parkingLot.ParkingSpacesAvailable();
+
+foreach (int space in spacesAvailable)
+{
+    Console.WriteLine($"A vaga {space} está disponível.");
 }
 

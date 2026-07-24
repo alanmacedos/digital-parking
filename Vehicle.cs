@@ -5,10 +5,13 @@ public class Vehicle
     public string Model { get; set; }
 
 
-    public Vehicle (string owner, string plate, string model)
+    public Vehicle(string owner, string plate, string model)
     {
         Owner = owner;
         Plate = plate;
         Model = model;
+
     }
+
+
 }
