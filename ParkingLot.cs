@@ -1,10 +1,10 @@
 public class ParkingLot
 {
-    Dictionary<int, string> parkingSpaces = new();
+    Dictionary<int, Vehicle> parkingSpaces = new();
 
     public ParkingLot (int quantityParkingSpaces)
     {
-        parkingSpaces = new Dictionary<int, string>();
+        parkingSpaces = new Dictionary<int, Vehicle>();
 
         for (int i = 1; i <= quantityParkingSpaces; i++)
         {
@@ -27,31 +27,58 @@ public class ParkingLot
         return spacesAvailable;
     }
 
-    public int SelectParkingSpace(List<int> spacesAvailable)
+    public int? SelectParkingSpace(List<int> spacesAvailable)
     {
         // Verify if there is a free space to park
         if (spacesAvailable.Count == 0)
         {
-            Console.WriteLine("Não temos vagas disponíveis no momento :(");
+            return null;
         }
 
-        // Select a place to park
+        // Randomly selects a place to park
         Random random = new Random();
         int randomIndex = random.Next(spacesAvailable.Count);
         int selectedSpace = spacesAvailable[randomIndex];
         return selectedSpace;
     }
 
-    public string DisplayNoSpaceAvailableMessage()
+    // public void DisplayNoSpaceAvailableMessage()
+    // {
+    //     Console.WriteLine("Infelizmente não temos vaga disponível no momento :(");
+    // }
+
+    public void ParkVehicle (int selectedSpace, Vehicle vehicle)
     {
-        return "Infelizmente não temos vaga disponível no momento :(";
+        parkingSpaces[selectedSpace] = vehicle;
+        VehicleParkedMessage(vehicle, selectedSpace);
     }
 
-    public void ParkCar (int selectedSpace, string plate)
+    public void VehicleParkedMessage(Vehicle vehicle, int selectedSpace)
     {
-        parkingSpaces[selectedSpace] = plate;
+        Console.WriteLine($"Veículo({vehicle.Plate}) estacionado na vaga {selectedSpace} ;)");
+    }
 
-        Console.WriteLine($"O carro de placa '{plate}' foi estacionado na vaga {parkingSpaces[selectedSpace]}");
+    public void ExitVehicle(Vehicle vehicle)
+    {
+        foreach (var parkingSpace in parkingSpaces)
+        {
+            if (parkingSpace.Value == vehicle)
+            {
+                parkingSpaces[parkingSpace.Key] = null!;
+
+                ExitVehicleMessage(vehicle);
+                break;
+            }
+
+            else
+            {
+                Console.WriteLine("Veículo não consta no estacionamento.");
+            }
+        }
+    }
+
+    public void ExitVehicleMessage(Vehicle vehicle)
+    {
+        Console.WriteLine($"O veículo de placa: {vehicle.Plate} foi retirado do estacionamento.");
     }
 }
-
