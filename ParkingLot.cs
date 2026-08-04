@@ -86,19 +86,24 @@ public class ParkingLot
         return parkingSpaces[selectedSpace] == null;
     }
 
-    public void ExitVehicle(Dictionary<int, ParkingSession?> parkingSpaces, ParkingSession session)
+    public ParkingSession? ExitVehicle(string plate, DateTime exitTime)
     {
         foreach (var item in parkingSpaces)
         {
-            if (item.Value == session)
+            if (item.Value != null && item.Value.Vehicle.Plate == plate)
             {
+                ParkingSession session = item.Value;
+                session.RegisterExit(exitTime);
                 parkingSpaces[item.Key] = null;
-                break;
+                
+                return session;
             }
         }
+
+        return null;
     }
 
-    public void ExpectedExitTime(Dictionary<int, ParkingSession?> parkingSpaces)
+    public void ExpectedExitTime()
     {
         var exits = new List<(int space, DateTime expectedExit)>();
 

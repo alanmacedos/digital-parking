@@ -3,9 +3,7 @@ public class ParkingSession
     public Vehicle Vehicle { get; set; }
     public int ContractedMinutes { get; set; }
     public DateTime EntryTime { get; set; }
-    public DateTime? ExitTime { get; set; }
-    
-    public DateTime ExpectedExitTime => EntryTime.AddMinutes(ContractedMinutes); 
+    public DateTime? ExitTime { get; set; } 
 
     public ParkingSession(Vehicle vehicle, int contractedMinutes, DateTime entryTime)
     {
@@ -16,6 +14,11 @@ public class ParkingSession
 
     public void RegisterExit(DateTime exitTime)
     {
+        if (EntryTime > exitTime)
+        {
+            throw new InvalidOperationException("Horário negativo.");
+        }
+
         ExitTime = exitTime;
     }
 }
