@@ -48,13 +48,13 @@ public class ParkingLot
             return;
         }
 
-        if (ParkingSpaceExists(selectedSpace))
+        if (!ParkingSpaceExists(selectedSpace))
         {
             Console.WriteLine($"A vaga {selectedSpace} não existe");
             return;
         }
 
-        if (ParkingSpaceIsAvailable(selectedSpace))
+        if (!ParkingSpaceIsAvailable(selectedSpace))
         {
             Console.WriteLine($"A vaga {selectedSpace} está ocupada.");
             return;
@@ -86,8 +86,37 @@ public class ParkingLot
         return parkingSpaces[selectedSpace] == null;
     }
 
-    public void ExitVehicle(Vehicle vehicle)
+    public void ExitVehicle(Dictionary<int, ParkingSession?> parkingSpaces, ParkingSession session)
     {
+        foreach (var item in parkingSpaces)
+        {
+            if (item.Value == session)
+            {
+                parkingSpaces[item.Key] = null;
+                break;
+            }
+        }
+    }
 
+    public void ExpectedExitTime(Dictionary<int, ParkingSession?> parkingSpaces)
+    {
+        var exits = new List<(int space, DateTime expectedExit)>();
+
+        foreach (var space in parkingSpaces)
+        {
+            if (space.Value != null)
+            {
+                DateTime exit = space.Value.EntryTime.AddMinutes(space.Value.ContractedMinutes);
+
+                exits.Add((space.Key, exit));
+            }
+        }
+
+        var orderedExits = exits.OrderBy(exit => exit.expectedExit).ToList();
+
+        foreach (var exit in orderedExits)
+        {
+            Console.WriteLine($"Vaga {exit.space} - Liberação prevista: {exit.expectedExit:HH:mm}");
+        }
     }
 }

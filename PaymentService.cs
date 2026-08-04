@@ -11,46 +11,46 @@ namespace digitalparking
     {
         public decimal CalculateParkingFee(ParkingSession session)
         {
-            TimeSpan elapsed = session.ExitTime - session.EntryTime;
+            if (session.ExitTime == null)
+            {
+                throw new InvalidOperationException("A saída do veículo ainda não foi registrada.");
+            }
+
+            TimeSpan elapsed = session.ExitTime.Value - session.EntryTime;
             int elapsedTime = (int)elapsed.TotalMinutes;
 
-            decimal fee = session.InitialFee;
+            decimal fee = getInitialFee(session.ContractedMinutes);
             int tolerance = 5;
 
             if (elapsedTime > session.ContractedMinutes + tolerance)
             {
-                if (session.ContractedMinutes == 30)
-                {
-                    fee += AdditionalFee(elapsedTime - session.ContractedMinutes);
-                    return fee;
-                }
-
-                else if (session.ContractedMinutes == 60)
-                {
-                    fee += AdditionalFee(elapsedTime - session.ContractedMinutes);
-                    return fee;
-                }
-
-                else if (session.ContractedMinutes == 120)
-                {
-                    fee += AdditionalFee(elapsedTime - session.ContractedMinutes);
-                    return fee;
-                }
-
-                else
-                {
-                    fee += AdditionalFee(elapsedTime - session.ContractedMinutes);
-                    return fee;
-                }
+                return fee += AdditionalFee(elapsedTime - session.ContractedMinutes);
             }
-
-            else
-            {
-                return fee;
-            }
+            
+            return fee;
         }
 
-        public decimal AdditionalFee(int additional)
+        private decimal getInitialFee(int contractedMinutes)
+        {
+            switch (contractedMinutes)
+            {
+                case 30:
+                    return 6;
+
+                case 60:
+                    return 10;
+
+                case 120:
+                    return 18;
+
+                case 180:
+                    return 30;
+
+                default:
+                    throw new ArgumentException("O tempo contratado é inválido.");
+            }
+        }
+        private decimal AdditionalFee(int additional)
         {
             decimal additionalFee = 0;
 
@@ -84,5 +84,6 @@ namespace digitalparking
             return additionalFee;
 
         }
+
     }
 }

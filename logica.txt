@@ -109,5 +109,5 @@ notes for the next code session
     -tempo real (ExitTime - EntryTime).
 Comparar:
 tempo real × tempo contratado.
-Implementar a tolerância de 10 minutos.
+Implementar a tolerância de 5 minutos.
 Implementar a tabela de adicionais.

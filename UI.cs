@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -20,7 +21,7 @@ public class UI
             switch (option)
             {
                 case 1:
-                    Console.WriteLine("Entrada de veículo será implementada");
+                    EnterVehicle();
                     break;
                 
                 case 2:
@@ -95,6 +96,70 @@ public class UI
     private void DisplayGoodByeMessage()
     {
         Console.WriteLine("Obrigado por utilizar o Digital Parking. Até Logo!");
+    }
+
+    public void EnterVehicle()
+    {
+        Console.WriteLine("Para registrar a entrada do veículo precisamos saber:");
+
+        Console.Write("Seu nome: ");
+        string owner = Console.ReadLine()!;
+
+        Console.Write("Placa do veículo: ");
+        string plate = Console.ReadLine()!;
+
+        Console.Write("Modelo: ");
+        string model = Console.ReadLine()!;
+
+        Vehicle vehicle = new Vehicle(owner, plate, model);
+
+        Console.Write(@"
+        Tempo contratado:
+        1 - 30 minutos
+        2 - 1 hora
+        3 - 2 horas
+        4 - 3 horas
+        ");
+
+        int option = GetOption();
+
+        ParkingSession parkingSession;
+
+        switch (option)
+        {
+            case 1:
+                parkingSession = new ParkingSession(vehicle, 30, DateTime.Now);
+                break;
+            
+            case 2:
+                parkingSession = new ParkingSession(vehicle, 60, DateTime.Now);
+                break;
+
+            case 3:
+                parkingSession = new ParkingSession(vehicle, 120, DateTime.Now);
+                break;
+            
+            case 4:
+                parkingSession = new ParkingSession(vehicle, 180, DateTime.Now);
+                break;
+
+            default:
+                throw new InvalidOperationException("Valor inválido.");
+        }
+
+        List<int> spacesAvailable = parkingLot.ParkingSpacesAvailable();
+
+        int? selectedSpace = parkingLot.SelectParkingSpace(spacesAvailable);
+
+        if (selectedSpace is int space)
+        {
+            parkingLot.ParkVehicle(space, parkingSession);
+        }
+
+        else
+        {
+            Console.WriteLine("Não há vagas disponíveis.");
+        }
     }
 
 }

@@ -7,7 +7,7 @@ public class ParkingSession
     
     public DateTime ExpectedExitTime => EntryTime.AddMinutes(ContractedMinutes); 
 
-    public ParkingSession(Vehicle vehicle, int contractedMinutes, DateTime entryTime, DateTime exitTime)
+    public ParkingSession(Vehicle vehicle, int contractedMinutes, DateTime entryTime)
     {
         Vehicle = vehicle;
         ContractedMinutes = contractedMinutes;
