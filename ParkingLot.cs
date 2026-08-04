@@ -1,14 +1,12 @@
 public class ParkingLot
 {
-    Dictionary<int, Vehicle> parkingSpaces = new();
+    private readonly Dictionary<int, ParkingSession?> parkingSpaces = new();
 
     public ParkingLot (int quantityParkingSpaces)
     {
-        parkingSpaces = new Dictionary<int, Vehicle>();
-
-        for (int i = 1; i <= quantityParkingSpaces; i++)
+        for (int space = 1; space <= quantityParkingSpaces; space++)
         {
-            parkingSpaces.Add(i, null!);
+            parkingSpaces.Add(space, null);
         }
     }
 
@@ -42,43 +40,54 @@ public class ParkingLot
         return selectedSpace;
     }
 
-    // public void DisplayNoSpaceAvailableMessage()
-    // {
-    //     Console.WriteLine("Infelizmente não temos vaga disponível no momento :(");
-    // }
-
-    public void ParkVehicle (int selectedSpace, Vehicle vehicle)
+    public void ParkVehicle (int selectedSpace, ParkingSession session)
     {
-        parkingSpaces[selectedSpace] = vehicle;
-        VehicleParkedMessage(vehicle, selectedSpace);
+        if (VehicleIsAlreadyParked(session.Vehicle.Plate))
+        {
+            Console.WriteLine($"Este veículo ({session.Vehicle.Plate})já está estacionado.");
+            return;
+        }
+
+        if (ParkingSpaceExists(selectedSpace))
+        {
+            Console.WriteLine($"A vaga {selectedSpace} não existe");
+            return;
+        }
+
+        if (ParkingSpaceIsAvailable(selectedSpace))
+        {
+            Console.WriteLine($"A vaga {selectedSpace} está ocupada.");
+            return;
+        }
+
+        parkingSpaces[selectedSpace] = session;
     }
 
-    public void VehicleParkedMessage(Vehicle vehicle, int selectedSpace)
+    private bool VehicleIsAlreadyParked(string plate)
     {
-        Console.WriteLine($"Veículo({vehicle.Plate}) estacionado na vaga {selectedSpace} ;)");
+        foreach (ParkingSession? session in parkingSpaces.Values)
+        {
+            if (session != null && session.Vehicle.Plate == plate)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private bool ParkingSpaceExists (int selectedSpace)
+    {
+        return parkingSpaces.ContainsKey(selectedSpace);
+    }
+
+    private bool ParkingSpaceIsAvailable (int selectedSpace)
+    {
+        return parkingSpaces[selectedSpace] == null;
     }
 
     public void ExitVehicle(Vehicle vehicle)
     {
-        foreach (var parkingSpace in parkingSpaces)
-        {
-            if (parkingSpace.Value == vehicle)
-            {
-                parkingSpaces[parkingSpace.Key] = null!;
 
-                ExitVehicleMessage(vehicle);
-                break;
-            }
-
-            else
-            {
-                Console.WriteLine("Veículo não consta no estacionamento.");
-            }
-        }
-    }
-
-    public void ExitVehicleMessage(Vehicle vehicle)
-    {
-        Console.WriteLine($"O veículo de placa: {vehicle.Plate} foi retirado do estacionamento.");
     }
 }
