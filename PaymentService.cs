@@ -1,9 +1,3 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
 public class PaymentService
 {
     public decimal CalculateParkingFee(ParkingSession session)
@@ -80,6 +74,41 @@ public class PaymentService
 
         return additionalFee;
 
+    }
+
+    public PaymentSummary CreatSummary(ParkingSession session, Payment payment)
+    {
+        if (session.ExitTime == null)
+        {
+            throw new InvalidOperationException("A saída do veículo ainda não foi registrada.");
+        }
+
+        TimeSpan contractedTime = TimeSpan.FromMinutes(session.ContractedMinutes);
+        TimeSpan parkedTime = session.ExitTime.Value - session.EntryTime;
+        TimeSpan additionalTime = parkedTime - contractedTime;
+
+        if (additionalTime < TimeSpan.Zero)
+        {
+            additionalTime = TimeSpan.Zero;
+        }
+
+        return new PaymentSummary
+        {
+            ContractedTime = contractedTime,
+            ParkedTime = parkedTime,
+            AdditionalTime = additionalTime,
+
+            Amount = payment.Amount,
+            Method = payment.Method,
+            PaidAt = payment.PaidAt,
+
+            Plate = session.Vehicle.Plate,
+            Owner = session.Vehicle.Owner,
+            Model = session.Vehicle.Model,
+
+            EntryTime = session.EntryTime,
+            ExitTime = session.ExitTime
+        };
     }
 
 }

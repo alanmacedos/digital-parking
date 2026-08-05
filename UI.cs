@@ -1,4 +1,7 @@
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Globalization;
+using System.Reflection.Metadata.Ecma335;
 
 public class UI
 {
@@ -205,6 +208,8 @@ public class UI
         DateTime paidAt = exitTime.AddMinutes(2);
 
         Payment payment = new Payment(amount, mehtod, paidAt);
+
+        PaymentSummary(payment, session);
     }
 
     private bool IsPlateValid(string plate)
@@ -233,7 +238,7 @@ public class UI
         return true;
     }
 
-    private string PaymentMethod (decimal amount)
+    private string PaymentMethod(decimal amount)
     {
         Console.WriteLine($@"O valor da permanência foi de R${amount}.
         
@@ -250,10 +255,10 @@ public class UI
         {
             case 1:
                 return "Pix";
-            
+
             case 2:
                 return "Dinheiro";
-            
+
             case 3:
                 return "Débito";
 
@@ -266,9 +271,50 @@ public class UI
     }
 
     // display payment summary before pay for real
-    private void PaymentSummary (Payment payment)
+    private void DisplayPaymentSummary(PaymentSummary summary)
     {
-        
+        Console.WriteLine($@"
+        ==================================================
+                          PAYMENT SUMMARY
+        ==================================================
+
+        Placa do veículo:      {pa}
+        Proprietário:          {session.Vehicle.Owner}
+        Modelo:                {session.Vehicle.Model}              
+
+        Horário de Entrada:    {session.EntryTime:dd/MM/yyyy HH:mm}
+        Horário de Saída:      {session.ExitTime:dd/MM/yyyy HH:mm}
+
+        Tempo Contratado:      {FormatDurarition(contractedTime)}
+        Tempo Estacionado:     {FormatDurarition(timeParked)}
+        Tempo Adicional:       {FormatDurarition(additionalTime)}
+
+        --------------------------------------------------
+        Valor total:           R$ {payment.Amount:C2}
+        --------------------------------------------------
+
+        Método de pagamento:   {payment.Method}
+        Data/Hora:             {payment.PaidAt}
+
+        Pressione ENTER para confirmar o pagamento...");
+
+        PayConfirmation();
+    }
+
+    private string FormatDurarition(TimeSpan duration)
+    {
+        return $"{(int)duration.TotalHours}h {duration.Minutes:00}min";
+    }
+
+    private void PayConfirmation()
+    {
+        while (Console.ReadKey(true).Key != ConsoleKey.Enter)
+        {
+            
+        }
+
+        Console.WriteLine("Pagamento confirmado com sucesso.");
+        Console.WriteLine("Volte sempre!");
     }
 
 }
