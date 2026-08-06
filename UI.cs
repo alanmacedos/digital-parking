@@ -1,7 +1,4 @@
-using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
 using System.Globalization;
-using System.Reflection.Metadata.Ecma335;
 
 public class UI
 {
@@ -27,7 +24,11 @@ public class UI
                     break;
 
                 case 3:
-                    Console.WriteLine("Listagem de vagas será implementada depois");
+                    DisplaySpaces(parkingLot);
+                    break;
+
+                case 4:
+                    DisplayExpectedExit(parkingLot);
                     break;
 
                 case 0:
@@ -49,7 +50,7 @@ public class UI
 
     ParkingLot parkingLot = new ParkingLot(5);
 
-    void DisplayWelcomeMessage()
+    private void DisplayWelcomeMessage()
     {
         Console.WriteLine(@"
         ██████╗ ██╗ ██████╗ ██╗████████╗ █████╗ ██╗
@@ -71,40 +72,60 @@ public class UI
         Thread.Sleep(2500);
     }
 
-    void DisplayMenu()
+    private void DisplayMenu()
     {
         Console.WriteLine(@"
         Escolha uma das opções abaixo:
 
         1 - Estacionar veículo
         2 - Retirar veículo
-        3 - Ver vagas e veículos estacionados
+        3 - Ver status das vagas
+        4 - Previsão de liberação de vagas
         0 - Sair
         ");
     }
 
-    int GetOption()
+    private int GetOption()
     {
         Console.Write("Opção: ");
-        string? input = Console.ReadLine();
+        int option = int.Parse(Console.ReadLine()!);
+        return option;
+    }
 
-        return int.TryParse(input, out int option) ? option : -1;
+    private void DisplayTittle(string tittle)
+    {
+        int count = tittle.Length;
+        string equals = string.Empty.PadLeft(count + 4, '=');
+        Console.WriteLine(equals);
+        Console.WriteLine($"  {tittle}");
+        Console.WriteLine(equals + "\n");
     }
 
     private void DisplayGoodByeMessage()
     {
-        Console.WriteLine("Obrigado por utilizar o Digital Parking. Até Logo!");
+        Console.WriteLine("\nObrigado por utilizar o Digital Parking. Até Logo!");
     }
 
     public void EnterVehicle()
     {
+        Console.Clear();
+
+        DisplayTittle("ENTRADA DE VEÍCULO");
+
         Console.WriteLine("Para registrar a entrada do veículo precisamos saber:");
 
         Console.Write("Seu nome: ");
         string owner = Console.ReadLine()!;
 
         Console.Write("\nPlaca(4 letras + 3 n°) do veículo: ");
-        string plate = Console.ReadLine()!;
+        string plate = Console.ReadLine()!.ToUpper().Trim();
+
+        while (parkingLot.VehicleIsAlreadyParked(plate))
+        {
+            Console.WriteLine("Veiculo com essa placa já estacionado");
+            Console.WriteLine("Digite outra placa (4 letras + 3 n°): ");
+            plate = Console.ReadLine()!;
+        }
 
         while (!IsPlateValid(plate))
         {
@@ -126,6 +147,13 @@ public class UI
         ");
 
         int option = GetOption();
+
+        while (option < 1 || option > 4)
+        {
+            Console.WriteLine("Opção inválida.");
+            Console.Write("Insira novamente sua opção: ");
+            option = GetOption();
+        }
 
         ParkingSession parkingSession;
 
@@ -168,14 +196,27 @@ public class UI
 
     public void ExitVehicle()
     {
+        Console.Clear();
+
+        DisplayTittle("RETIRADA DE VEÍCULO");
+
         Console.Write("\nPlaca(4 letras + 3 n°) do veículo: ");
-        string plate = Console.ReadLine()!;
+        string plate = Console.ReadLine()!.ToUpper().Trim();
 
         while (!IsPlateValid(plate))
         {
             Console.WriteLine("Placa inválida. Digite novamente (4 letras + 3 n°): ");
             plate = Console.ReadLine()!;
         }
+
+        while (!parkingLot.VehicleIsAlreadyParked(plate))
+        {
+            Console.WriteLine("Não há veículo estacionado com essa placa.");
+            Console.WriteLine("Digite novamente (4 letras + 3 n°): ");
+            plate = Console.ReadLine()!;
+        }
+
+        Console.WriteLine("\nVeículo encontrado!");
 
         Console.WriteLine("\nData e horário de saída (dd/MM/yyyy HH:mm): ");
         DateTime exitTime;
@@ -189,11 +230,10 @@ public class UI
 
         if (session == null)
         {
-            Console.WriteLine("Não há veículo estacionado com essa placa.");
-            return;
+            throw new InvalidCastException("Sessão nula");
         }
 
-        Console.WriteLine("Veículo encontrado!");
+        Console.WriteLine("\nVeículo encontrado!");
 
         PaymentService paymentService = new PaymentService();
         decimal amount = paymentService.CalculateParkingFee(session!);
@@ -209,7 +249,9 @@ public class UI
 
         Payment payment = new Payment(amount, mehtod, paidAt);
 
-        PaymentSummary(payment, session);
+        PaymentSummary summary = paymentService.CreateSummary(session, payment);
+
+        DisplayPaymentSummary(summary);
     }
 
     private bool IsPlateValid(string plate)
@@ -240,6 +282,9 @@ public class UI
 
     private string PaymentMethod(decimal amount)
     {
+        Console.WriteLine();
+        DisplayTittle("MÉTODO DE PAGAMENTO");
+
         Console.WriteLine($@"O valor da permanência foi de R${amount}.
         
         Métodos de pagamento:
@@ -250,6 +295,13 @@ public class UI
         ");
 
         int option = GetOption();
+
+        while (option < 1 || option > 4)
+        {
+            Console.WriteLine("Opção inválida.");
+            Console.Write("Insira novamente sua opção: ");
+            option = GetOption();
+        }
 
         switch (option)
         {
@@ -273,28 +325,26 @@ public class UI
     // display payment summary before pay for real
     private void DisplayPaymentSummary(PaymentSummary summary)
     {
+        DisplayTittle("DEMONSTRATIVO DE PAGAMENTO");
+
         Console.WriteLine($@"
-        ==================================================
-                          PAYMENT SUMMARY
-        ==================================================
+        Placa do veículo:      {summary.Plate}
+        Proprietário:          {summary.Owner}
+        Modelo:                {summary.Model}              
 
-        Placa do veículo:      {pa}
-        Proprietário:          {session.Vehicle.Owner}
-        Modelo:                {session.Vehicle.Model}              
+        Horário de Entrada:    {summary.EntryTime:dd/MM/yyyy HH:mm}
+        Horário de Saída:      {summary.ExitTime:dd/MM/yyyy HH:mm}
 
-        Horário de Entrada:    {session.EntryTime:dd/MM/yyyy HH:mm}
-        Horário de Saída:      {session.ExitTime:dd/MM/yyyy HH:mm}
-
-        Tempo Contratado:      {FormatDurarition(contractedTime)}
-        Tempo Estacionado:     {FormatDurarition(timeParked)}
-        Tempo Adicional:       {FormatDurarition(additionalTime)}
+        Tempo Contratado:      {FormatDurarition(summary.ContractedTime)}
+        Tempo Estacionado:     {FormatDurarition(summary.ParkedTime)}
+        Tempo Adicional:       {FormatDurarition(summary.AdditionalTime)}
 
         --------------------------------------------------
-        Valor total:           R$ {payment.Amount:C2}
+        Valor total:           R$ {summary.Amount:N2}
         --------------------------------------------------
 
-        Método de pagamento:   {payment.Method}
-        Data/Hora:             {payment.PaidAt}
+        Método de pagamento:   {summary.Method}
+        Data/Hora:             {summary.PaidAt}
 
         Pressione ENTER para confirmar o pagamento...");
 
@@ -310,11 +360,41 @@ public class UI
     {
         while (Console.ReadKey(true).Key != ConsoleKey.Enter)
         {
-            
+
         }
 
         Console.WriteLine("Pagamento confirmado com sucesso.");
         Console.WriteLine("Volte sempre!");
     }
 
+    private void DisplaySpaces(ParkingLot parkingLot)
+    {
+        Console.Clear();
+
+        DisplayTittle("LISTAGEM DAS VAGAS");
+
+        foreach (var space in parkingLot.GetParkingSpaces())
+        {
+            Console.WriteLine($@"
+            Vaga:                 {space.Key}
+            Status:               {(space.Value is null ? "Disponível" : "Ocupada")}
+            ");
+        }
+
+        List<KeyValuePair<int, ParkingSession?>> parkingSpaces =
+        parkingLot.GetParkingSpaces();
+
+        Console.WriteLine($@"
+        QTD total de vagas:   {parkingSpaces.Count}
+        Vagas disponíveis:    {parkingLot.ParkingSpacesAvailable().Count}
+        Vagas ocupadas:       {parkingSpaces.Count(space => space.Value != null)}");
+    }
+
+    private void DisplayExpectedExit(ParkingLot parkingLot)
+    {
+        Console.Clear();
+        DisplayTittle("PROVÁVEL LIBERAÇÃO DE VAGAS");
+
+        parkingLot.ExpectedExitTime();
+    }
 }

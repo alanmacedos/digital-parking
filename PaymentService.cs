@@ -76,7 +76,7 @@ public class PaymentService
 
     }
 
-    public PaymentSummary CreatSummary(ParkingSession session, Payment payment)
+    public PaymentSummary CreateSummary(ParkingSession session, Payment payment)
     {
         if (session.ExitTime == null)
         {

@@ -2,7 +2,7 @@ public class ParkingLot
 {
     private readonly Dictionary<int, ParkingSession?> parkingSpaces = new();
 
-    public ParkingLot (int quantityParkingSpaces)
+    public ParkingLot(int quantityParkingSpaces)
     {
         for (int space = 1; space <= quantityParkingSpaces; space++)
         {
@@ -40,7 +40,7 @@ public class ParkingLot
         return selectedSpace;
     }
 
-    public void ParkVehicle (int selectedSpace, ParkingSession session)
+    public void ParkVehicle(int selectedSpace, ParkingSession session)
     {
         if (VehicleIsAlreadyParked(session.Vehicle.Plate))
         {
@@ -61,9 +61,10 @@ public class ParkingLot
         }
 
         parkingSpaces[selectedSpace] = session;
+        Console.WriteLine($"\nVeículo estacionado na vaga {parkingSpaces[selectedSpace]} com sucesso!");
     }
 
-    private bool VehicleIsAlreadyParked(string plate)
+    public bool VehicleIsAlreadyParked(string plate)
     {
         foreach (ParkingSession? session in parkingSpaces.Values)
         {
@@ -76,12 +77,12 @@ public class ParkingLot
         return false;
     }
 
-    private bool ParkingSpaceExists (int selectedSpace)
+    private bool ParkingSpaceExists(int selectedSpace)
     {
         return parkingSpaces.ContainsKey(selectedSpace);
     }
 
-    private bool ParkingSpaceIsAvailable (int selectedSpace)
+    private bool ParkingSpaceIsAvailable(int selectedSpace)
     {
         return parkingSpaces[selectedSpace] == null;
     }
@@ -95,7 +96,7 @@ public class ParkingLot
                 ParkingSession session = item.Value;
                 session.RegisterExit(exitTime);
                 parkingSpaces[item.Key] = null;
-                
+
                 return session;
             }
         }
@@ -123,5 +124,10 @@ public class ParkingLot
         {
             Console.WriteLine($"Vaga {exit.space} - Liberação prevista: {exit.expectedExit:HH:mm}");
         }
+    }
+
+    public List<KeyValuePair<int, ParkingSession?>> GetParkingSpaces()
+    {
+        return parkingSpaces.ToList();
     }
 }
